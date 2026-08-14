@@ -303,8 +303,8 @@
         // Lazy-load iframes with IntersectionObserver
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
+                const preview = entry.target;
                 if (entry.isIntersecting) {
-                    const preview = entry.target;
                     if (preview.querySelector('iframe')) return;
                     const src = preview.dataset.src;
                     const iframe = document.createElement('iframe');
@@ -316,10 +316,16 @@
                         if (ph) ph.classList.add('loaded');
                     };
                     preview.insertBefore(iframe, preview.firstChild);
-                    observer.unobserve(preview);
+                } else {
+                    const iframe = preview.querySelector('iframe');
+                    if (iframe) {
+                        iframe.remove();
+                        const ph = preview.querySelector('.placeholder');
+                        if (ph) ph.classList.remove('loaded');
+                    }
                 }
             });
-        }, { rootMargin: '200px' });
+        }, { rootMargin: '400px' });
 
         document.querySelectorAll('.card-preview[data-src]').forEach(el => observer.observe(el));
     }
